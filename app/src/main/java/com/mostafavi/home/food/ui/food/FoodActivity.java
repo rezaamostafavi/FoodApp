@@ -1,4 +1,4 @@
-package com.mostafavi.home.food;
+package com.mostafavi.home.food.ui.food;
 
 import android.animation.ObjectAnimator;
 import android.os.Build;
@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.mostafavi.home.food.Data.Food;
+import com.mostafavi.home.food.R;
 import com.mostafavi.home.food.util.Utils;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;

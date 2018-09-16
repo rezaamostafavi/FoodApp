@@ -1,4 +1,4 @@
-package com.mostafavi.home.food;
+package com.mostafavi.home.food.ui.main;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,36 +8,58 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.Window;
 
 import com.google.gson.Gson;
+import com.mostafavi.home.food.BR;
 import com.mostafavi.home.food.Data.Food;
 import com.mostafavi.home.food.Data.User;
+import com.mostafavi.home.food.databinding.ActivityMainBinding;
+import com.mostafavi.home.food.ui.base.BaseActivity;
+import com.mostafavi.home.food.ui.food.FoodActivity;
+import com.mostafavi.home.food.R;
 import com.mostafavi.home.food.adapter.FoodAdapter;
 import com.mostafavi.home.food.interfaces.ListItemClickListener;
 
-import java.util.AbstractQueue;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+import javax.inject.Inject;
+
+public class MainActivity extends BaseActivity<ActivityMainBinding, MainViewModel> implements MainNavigator {
+
+    @Inject
+    MainViewModel viewModel;
+    ActivityMainBinding binding;
 
     private FoodAdapter foodAdapter;
-    private Context mContext;
     private List<Food> foods;
     //widgets
     private RecyclerView rvFoods;
     private Toolbar toolbar;
 
     @Override
+    public int getBindingVariable() {
+        return BR.viewModel;
+    }
+
+    @Override
+    public MainViewModel getViewModel() {
+        return viewModel;
+    }
+
+    @Override
+    public int getLayoutId() {
+        return R.layout.activity_main;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        mContext = this;
+        binding = getViewDataBinding();
+        viewModel.setNavigator(this);
         init();
         initToolBar();
         initFoods();
@@ -45,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initToolBar() {
-        setSupportActionBar(toolbar);
+        setSupportActionBar(binding.toolbar);
         getSupportActionBar().setTitle(R.string.app_name);
     }
 
