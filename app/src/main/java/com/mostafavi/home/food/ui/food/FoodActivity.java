@@ -20,8 +20,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.mostafavi.home.food.BR;
 import com.mostafavi.home.food.Data.Food;
 import com.mostafavi.home.food.R;
+import com.mostafavi.home.food.databinding.ActivityFoodBinding;
+import com.mostafavi.home.food.ui.base.BaseActivity;
 import com.mostafavi.home.food.util.Utils;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -30,25 +33,38 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class FoodActivity extends AppCompatActivity {
+import javax.inject.Inject;
 
-    private Food food;
-    private ImageView imgImage, imgProfile;
-    private TextView tvDate, tvLike, tvUserName, tvDescription;
-    private Toolbar toolbar;
-    private FloatingActionButton fab;
+public class FoodActivity extends BaseActivity<ActivityFoodBinding, FoodViewModel> implements FoodNavigator {
+
+    @Inject
+    FoodViewModel viewModel;
+    ActivityFoodBinding binding;
+
+    @Override
+    public int getBindingVariable() {
+        return BR.viewModel;
+    }
+
+    @Override
+    public FoodViewModel getViewModel() {
+        return viewModel;
+    }
+
+    @Override
+    public int getLayoutId() {
+        return R.layout.activity_food;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_food);
-        initBundle();
-        init();
+        binding = getViewDataBinding();
+        viewModel.setNavigator(this);
+        viewModel.init(getIntent());
         initToolbar();
-        if (food == null)
-            return;
-        initView();
         initTransitionSettings();
+        init();
     }
 
     @Override
@@ -61,8 +77,8 @@ public class FoodActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        ObjectAnimator.ofFloat(tvDescription, "translationY", 0, Utils.getHeightScreen(this)).setDuration(500).start();
-        fab.setVisibility(View.GONE);
+        ObjectAnimator.ofFloat(binding.tvDescription, "translationY", 0, Utils.getHeightScreen(this)).setDuration(500).start();
+        binding.fab.setVisibility(View.GONE);
         super.onBackPressed();
     }
 
@@ -76,55 +92,19 @@ public class FoodActivity extends AppCompatActivity {
         }
     }
 
-    private void initView() {
-        Picasso.with(this).load(food.getImage()).into(imgImage);
-        Picasso.with(this).load(food.getUser().getProfilePicture()).into(imgProfile);
-        tvDate.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.UK).format(new Date(food.getDateTime())));
-        tvLike.setText(String.valueOf(food.getLike()));
-        tvDescription.setText(food.getDescription());
-        tvUserName.setText(food.getUser().getName());
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                food.setLiked(!food.isLiked());
-                if (food.isLiked()) {
-                    fab.setImageResource(R.drawable.ic_heart);
-                } else
-                    fab.setImageResource(R.drawable.ic_disable_heart);
-
-            }
-        });
-        ObjectAnimator.ofFloat(tvDescription, "translationY", Utils.getHeightScreen(this), 0).setDuration(500).start();
-    }
-
-    private void initBundle() {
-        if (getIntent() != null) {
-            if (getIntent().hasExtra("food")) {
-                food = new Gson().fromJson(getIntent().getStringExtra("food"), Food.class);
-            }
-        }
-    }
-
     private void init() {
-        imgImage = (ImageView) findViewById(R.id.imgImage);
-        imgProfile = (ImageView) findViewById(R.id.imgProfile);
-        tvDate = (TextView) findViewById(R.id.tvDate);
-        tvLike = (TextView) findViewById(R.id.tvLike);
-        tvDescription = (TextView) findViewById(R.id.tvDescription);
-        tvUserName = (TextView) findViewById(R.id.tvName);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        ObjectAnimator.ofFloat(binding.tvDescription, "translationY", Utils.getHeightScreen(this), 0).setDuration(500).start();
     }
 
     protected void initToolbar() {
-        setSupportActionBar(toolbar);
+        setSupportActionBar(binding.toolbar);
         getSupportActionBar().setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Window window = getWindow();
             window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
             changeStatusBarColor(ContextCompat.getColor(this, R.color.colorTransparentStatusBar));
-            toolbar.setPadding(0, Utils.getStatusBarHeight(this), 0, 0);
+            binding.toolbar.setPadding(0, Utils.getStatusBarHeight(this), 0, 0);
         }
     }
 

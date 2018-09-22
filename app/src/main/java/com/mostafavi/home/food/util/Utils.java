@@ -23,4 +23,10 @@ public class Utils {
         context.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         return displayMetrics.heightPixels;
     }
+
+    public static boolean isEmpty(String text) {
+        if (text == null || text.isEmpty() || text.toLowerCase().equals("null"))
+            return true;
+        return false;
+    }
 }

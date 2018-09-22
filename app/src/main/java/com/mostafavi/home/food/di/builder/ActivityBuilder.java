@@ -16,13 +16,23 @@
 
 package com.mostafavi.home.food.di.builder;
 
+import com.mostafavi.home.food.ui.food.FoodActivity;
+import com.mostafavi.home.food.ui.food.FoodActivityModule;
+import com.mostafavi.home.food.ui.main.MainActivity;
+import com.mostafavi.home.food.ui.main.MainActivityModule;
+
 import dagger.Module;
+import dagger.android.ContributesAndroidInjector;
 
 /**
  * Created by amitshekhar on 14/09/17.
  */
 @Module
 public abstract class ActivityBuilder {
+    @ContributesAndroidInjector(modules = {MainActivityModule.class})
+    abstract MainActivity bindMainActivity();
 
+    @ContributesAndroidInjector(modules = {FoodActivityModule.class})
+    abstract FoodActivity bindFoodActivity();
 
 }

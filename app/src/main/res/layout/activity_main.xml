@@ -25,15 +25,58 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rvFoods"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:overScrollMode="never"
-            android:paddingBottom="@dimen/smallMarginSize"
-            android:paddingTop="@dimen/smallMarginSize"
-            tools:listitem="@layout/item_lst_food" />
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvFoods"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:overScrollMode="never"
+                android:paddingBottom="@dimen/smallMarginSize"
+                android:paddingTop="@dimen/smallMarginSize"
+                tools:listitem="@layout/item_lst_food" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/formBackground"
+                android:gravity="center"
+                android:visibility="@{viewModel.isLoadingMode?View.VISIBLE:View.GONE}"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.error}"
+                    android:textColor="@color/darkGrayText"
+                    android:textSize="@dimen/normalTextSize" />
+
+                <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/btnTryAgain"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/normalMarginSize"
+                    android:text="@string/try_again"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:onClick="@{viewModel}"
+                    android:visibility="@{viewModel.isError?View.VISIBLE:View.GONE}"
+                    app:backgroundTint="@color/colorPrimaryDark" />
+            </LinearLayout>
+
+            <android.support.v4.widget.ContentLoadingProgressBar
+                android:id="@+id/progressLoading"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:visibility="@{viewModel.loading?View.VISIBLE:View.GONE}" />
+
+        </RelativeLayout>
 
     </LinearLayout>
 </layout>

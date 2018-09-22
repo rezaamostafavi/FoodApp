@@ -1,12 +1,10 @@
 package com.mostafavi.home.food.ui.main;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -20,7 +18,7 @@ import com.mostafavi.home.food.databinding.ActivityMainBinding;
 import com.mostafavi.home.food.ui.base.BaseActivity;
 import com.mostafavi.home.food.ui.food.FoodActivity;
 import com.mostafavi.home.food.R;
-import com.mostafavi.home.food.adapter.FoodAdapter;
+import com.mostafavi.home.food.ui.main.adapter.FoodAdapter;
 import com.mostafavi.home.food.interfaces.ListItemClickListener;
 
 import java.util.ArrayList;
@@ -32,9 +30,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding, MainViewMode
 
     @Inject
     MainViewModel viewModel;
+    @Inject
+    FoodAdapter foodAdapter;
     ActivityMainBinding binding;
 
-    private FoodAdapter foodAdapter;
     private List<Food> foods;
     //widgets
     private RecyclerView rvFoods;
@@ -60,10 +59,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding, MainViewMode
         super.onCreate(savedInstanceState);
         binding = getViewDataBinding();
         viewModel.setNavigator(this);
-        init();
         initToolBar();
-        initFoods();
-        initFoodsList();
+        init();
+//        initFoods();
+//        initFoodsList();
     }
 
     private void initToolBar() {
@@ -88,30 +87,49 @@ public class MainActivity extends BaseActivity<ActivityMainBinding, MainViewMode
     }
 
     private void initFoodsList() {
-        int columns = getResources().getInteger(R.integer.gridColumns);
-        rvFoods.setLayoutManager(new GridLayoutManager(mContext, columns));
-        foodAdapter = new FoodAdapter(mContext, foods);
-        rvFoods.setAdapter(foodAdapter);
-        foodAdapter.setItemClickListener(new ListItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                Intent intent = new Intent(mContext, FoodActivity.class);
-                intent.putExtra("food", new Gson().toJson(foods.get(position)));
-                View imgImage = view.findViewById(R.id.imgImage);
-                View tvDescription = view.findViewById(R.id.tvDescription);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Pair<View, String> imagePair = new Pair<>(imgImage, imgImage.getTransitionName());
-                    Pair<View, String> descriptionPair = new Pair<>(tvDescription, tvDescription.getTransitionName());
-                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this, imagePair/*, descriptionPair*/);
-                    startActivity(intent, options.toBundle());
-                } else
-                    startActivity(intent);
-            }
-        });
+//        int columns = getResources().getInteger(R.integer.gridColumns);
+//        rvFoods.setLayoutManager(new GridLayoutManager(mContext, columns));
+//        foodAdapter = new FoodAdapter(mContext, foods);
+//        rvFoods.setAdapter(foodAdapter);
+//        foodAdapter.setItemClickListener(new ListItemClickListener() {
+//            @Override
+//            public void onItemClick(View view, int position) {
+//                Intent intent = new Intent(mContext, FoodActivity.class);
+//                intent.putExtra("food", new Gson().toJson(foods.get(position)));
+//                View imgImage = view.findViewById(R.id.imgImage);
+//                View tvDescription = view.findViewById(R.id.tvDescription);
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                    Pair<View, String> imagePair = new Pair<>(imgImage, imgImage.getTransitionName());
+//                    Pair<View, String> descriptionPair = new Pair<>(tvDescription, tvDescription.getTransitionName());
+//                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this, imagePair/*, descriptionPair*/);
+//                    startActivity(intent, options.toBundle());
+//                } else
+//                    startActivity(intent);
+//            }
+//        });
     }
 
     private void init() {
-        rvFoods = (RecyclerView) findViewById(R.id.rvFoods);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        int columns = getResources().getInteger(R.integer.gridColumns);
+        binding.rvFoods.setLayoutManager(new GridLayoutManager(mContext, columns));
+        binding.rvFoods.setAdapter(foodAdapter);
+        foodAdapter.setItemClickListener(viewModel);
+    }
+
+    @Override
+    public void OnItemLick(String food,View image) {
+        Intent intent = new Intent(mContext, FoodActivity.class);
+        intent.putExtra("food", food);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Pair<View, String> imagePair = new Pair<>(image, image.getTransitionName());
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this, imagePair);
+            startActivity(intent, options.toBundle());
+        } else
+            startActivity(intent);
+    }
+
+    @Override
+    public void refreshList(List<Food> foods) {
+        foodAdapter.updateList(foods);
     }
 }

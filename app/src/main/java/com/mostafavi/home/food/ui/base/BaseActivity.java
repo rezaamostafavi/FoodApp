@@ -4,10 +4,12 @@ import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import dagger.android.AndroidInjection;
@@ -16,7 +18,7 @@ import dagger.android.AndroidInjection;
  * Created by Reza on 9/16/2018.
  */
 
-public abstract class BaseActivity<B extends ViewDataBinding,V extends BaseViewModel> extends AppCompatActivity {
+public abstract class BaseActivity<B extends ViewDataBinding, V extends BaseViewModel> extends AppCompatActivity implements BaseNavigator {
 
     private B mViewDataBinding;
     private V mViewModel;
@@ -52,4 +54,10 @@ public abstract class BaseActivity<B extends ViewDataBinding,V extends BaseViewM
         mViewDataBinding.setVariable(getBindingVariable(), mViewModel);
         mViewDataBinding.executePendingBindings();
     }
+
+    @Override
+    public String getRString(int ID) {
+        return mContext.getString(ID);
+    }
+
 }
